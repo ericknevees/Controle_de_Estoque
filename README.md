@@ -1,4 +1,4 @@
-# ASBRAS • Controle de Estoque (Layout Profissional)
+# • Controle de Estoque (Layout Profissional)
 
 Inclui:
 - Login (Admin vs Usuário) com JWT
@@ -8,6 +8,7 @@ Inclui:
 - Relatórios (Admin): PDF
 - **Layout profissional** + **logo na página**
 
+**Vídeo mostrando funcionamento na pasta mockups**
 
 ## Rodar local (VSCode)
 
