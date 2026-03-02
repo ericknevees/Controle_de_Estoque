@@ -1,28 +1,34 @@
-import { auth } from "./auth";
-
 const BASE = import.meta.env.VITE_API_URL;
 
+// Wrapper padrao de fetch para JSON + cookie de sessao.
 async function request(path, options = {}) {
-  const token = auth.getToken();
+  const headers = {
+    ...(options.body ? { "Content-Type": "application/json" } : {}),
+    ...(options.headers || {})
+  };
 
   const res = await fetch(`${BASE}${path}`, {
     ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(options.headers || {})
-    }
+    credentials: "include",
+    headers
   });
 
   if (res.status === 204) return null;
 
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data?.error || "Erro na requisição");
+  if (!res.ok) throw new Error(data?.error || data?.message || "Erro na requisicao");
   return data;
 }
 
+// Cliente de API consumido pelas telas.
 export const api = {
   login: (body) => request("/api/auth/login", { method: "POST", body: JSON.stringify(body) }),
+  register: (body) => request("/api/auth/register", { method: "POST", body: JSON.stringify(body) }),
+  forgotPassword: (body) => request("/api/auth/forgot-password", { method: "POST", body: JSON.stringify(body) }),
+  resetPassword: (body) => request("/api/auth/reset-password", { method: "POST", body: JSON.stringify(body) }),
+  changePassword: (body) => request("/api/auth/change-password", { method: "POST", body: JSON.stringify(body) }),
+  me: () => request("/api/auth/me"),
+  logout: () => request("/api/auth/logout", { method: "POST" }),
 
   listProducts: (sector) => request(sector ? `/api/products?sector=${encodeURIComponent(sector)}` : "/api/products"),
   createProduct: (body) => request("/api/products", { method: "POST", body: JSON.stringify(body) }),
@@ -36,10 +42,10 @@ export const api = {
   createExit: (body) => request("/api/exits", { method: "POST", body: JSON.stringify(body) })
 };
 
+// Download de arquivos binarios (PDF/CSV) mantendo cookie de sessao.
 export async function downloadFile(path, filename) {
-  const token = auth.getToken();
   const res = await fetch(`${BASE}${path}`, {
-    headers: token ? { Authorization: `Bearer ${token}` } : {}
+    credentials: "include"
   });
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));

@@ -1,53 +1,48 @@
 const express = require("express");
 const Product = require("../models/Product");
 const { requireAuth, requireAdmin } = require("../middleware/auth");
+const { auditLog } = require("../utils/audit");
+const { sanitizeText, validateProductPayload } = require("../utils/validation");
 
 const router = express.Router();
 
-// TODOS autenticados podem listar (usuário precisa ver estoque)
+// Lista produtos (todos autenticados), com filtro opcional de setor.
 router.get("/", requireAuth, async (req, res) => {
-  const { sector } = req.query; // opcional: ?sector=Limpeza
+  const sector = sanitizeText(req.query?.sector || "", 20);
   const filter = sector ? { sector } : {};
   const products = await Product.find(filter).sort({ sector: 1, name: 1 });
   res.json(products);
 });
 
-// ADMIN cria
+// Cria produto novo (somente admin).
 router.post("/", requireAuth, requireAdmin, async (req, res) => {
-  const { name, sector, unit, minQty, qty } = req.body;
-  if (!name || !sector || minQty == null || !unit) {
-    return res.status(400).json({ error: "name, sector, unit, minQty obrigatórios" });
-  }
+  const validated = validateProductPayload(req.body || {});
+  if (!validated.ok) return res.status(400).json({ error: validated.error });
 
-  const created = await Product.create({
-    name,
-    sector,
-    unit,
-    minQty: Number(minQty),
-    qty: qty != null ? Number(qty) : 0
-  });
-
+  const created = await Product.create(validated.patch);
+  auditLog(req, "product.create", { productId: created._id.toString(), name: created.name });
   res.status(201).json(created);
 });
 
-// ADMIN atualiza
+// Atualiza campos parciais de produto (somente admin).
 router.put("/:id", requireAuth, requireAdmin, async (req, res) => {
-  const patch = {};
-  ["name", "sector", "unit", "minQty", "qty"].forEach((k) => {
-    if (req.body[k] != null) {
-      patch[k] = k === "name" || k === "sector" || k === "unit" ? req.body[k] : Number(req.body[k]);
-    }
-  });
+  const validated = validateProductPayload(req.body || {}, { partial: true });
+  if (!validated.ok) return res.status(400).json({ error: validated.error });
 
-  const updated = await Product.findByIdAndUpdate(req.params.id, patch, { new: true, runValidators: true });
-  if (!updated) return res.status(404).json({ error: "Produto não encontrado" });
+  const updated = await Product.findByIdAndUpdate(req.params.id, validated.patch, {
+    new: true,
+    runValidators: true
+  });
+  if (!updated) return res.status(404).json({ error: "Produto nao encontrado" });
+  auditLog(req, "product.update", { productId: updated._id.toString(), name: updated.name });
   res.json(updated);
 });
 
-// ADMIN remove
+// Remove produto por id (somente admin).
 router.delete("/:id", requireAuth, requireAdmin, async (req, res) => {
   const deleted = await Product.findByIdAndDelete(req.params.id);
-  if (!deleted) return res.status(404).json({ error: "Produto não encontrado" });
+  if (!deleted) return res.status(404).json({ error: "Produto nao encontrado" });
+  auditLog(req, "product.delete", { productId: deleted._id.toString(), name: deleted.name });
   res.status(204).send();
 });
 

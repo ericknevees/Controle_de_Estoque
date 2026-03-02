@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { api } from "../api";
 import logo from "../assets/logo.png";
 
-const BASE = import.meta.env.VITE_API_URL;
-
+// Tela de cadastro de novos usuarios.
 export default function Register() {
   const [form, setForm] = useState({
     username: "",
@@ -15,6 +15,7 @@ export default function Register() {
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
 
+  // Valida formulario localmente e chama endpoint de registro.
   async function onSubmit(e) {
     e.preventDefault();
     setError("");
@@ -26,43 +27,24 @@ export default function Register() {
     }
 
     if (form.password !== form.confirmPassword) {
-      setError("As senhas não conferem");
+      setError("As senhas nao conferem");
       return;
     }
 
     if (form.password.length < 6) {
-      setError("A senha deve ter no mínimo 6 caracteres");
+      setError("A senha deve ter no minimo 6 caracteres");
       return;
     }
 
     try {
-      const response = await fetch(`${BASE}/api/auth/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username: form.username,
-          password: form.password,
-          email: form.email,
-          role: "user"
-        })
+      await api.register({
+        username: form.username,
+        password: form.password,
+        email: form.email
       });
 
-      const text = await response.text();
-      let data;
-      
-      try {
-        data = JSON.parse(text);
-      } catch (e) {
-        console.error("Resposta não é JSON:", text);
-        throw new Error("Servidor respondeu com erro: " + text.substring(0, 100));
-      }
-
-      if (!response.ok) {
-        throw new Error(data.message || "Erro ao cadastrar");
-      }
-
       setSuccess(true);
-      setTimeout(() => navigate("/login"), 2000);
+      setTimeout(() => navigate("/login"), 1500);
     } catch (err) {
       setError(err.message);
     }
@@ -76,7 +58,7 @@ export default function Register() {
             <img src={logo} alt="ASBRAS" style={{ width: 90, height: 90, borderRadius: 14 }} />
             <div>
               <h1 style={{ margin: 0 }}>Criar Conta</h1>
-              <div className="small">• Registre-se para acessar o controle de estoque</div>
+              <div className="small">Registre-se para acessar o controle de estoque</div>
             </div>
           </div>
         </div>
@@ -84,30 +66,30 @@ export default function Register() {
         <div className="form">
           <h3>Cadastro</h3>
           {error && <p style={{ color: "var(--danger)", marginTop: 0 }}>{error}</p>}
-          {success && <p style={{ color: "var(--accent)", marginTop: 0 }}>✓ Cadastro realizado! Redirecionando para login...</p>}
+          {success && <p style={{ color: "var(--accent)", marginTop: 0 }}>Cadastro realizado, redirecionando...</p>}
 
           <form onSubmit={onSubmit} style={{ display: "grid", gap: 10 }}>
-            <input 
+            <input
               type="text"
-              placeholder="Usuário" 
+              placeholder="Usuario"
               value={form.username}
               onChange={(e) => setForm({ ...form, username: e.target.value })}
             />
-            <input 
+            <input
               type="email"
-              placeholder="Email" 
+              placeholder="Email"
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
             />
-            <input 
+            <input
               type="password"
-              placeholder="Senha" 
+              placeholder="Senha"
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
             />
-            <input 
+            <input
               type="password"
-              placeholder="Confirmar Senha" 
+              placeholder="Confirmar Senha"
               value={form.confirmPassword}
               onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
             />
@@ -116,7 +98,10 @@ export default function Register() {
           </form>
 
           <div style={{ marginTop: 14, textAlign: "center" }} className="small">
-            Já tem conta? <Link to="/login" style={{ color: "var(--accent)", textDecoration: "none", fontWeight: 700 }}>Faça login</Link>
+            Ja tem conta?{" "}
+            <Link to="/login" style={{ color: "var(--accent)", textDecoration: "none", fontWeight: 700 }}>
+              Faca login
+            </Link>
           </div>
         </div>
       </div>

@@ -4,6 +4,7 @@ import { api } from "../api";
 const SECTORS = ["Expediente", "Escritorio", "Limpeza", "Copa"];
 const UNITS = ["Un", "Pct", "Ltr", "Cx"];
 
+// Tela administrativa de cadastro e manutencao de produtos.
 export default function AdminProducts() {
   const [items, setItems] = useState([]);
   const [form, setForm] = useState({
@@ -15,6 +16,7 @@ export default function AdminProducts() {
   });
   const [error, setError] = useState("");
 
+  // Carrega lista de produtos para a tabela.
   async function load() {
     setError("");
     try {
@@ -28,6 +30,7 @@ export default function AdminProducts() {
     load();
   }, []);
 
+  // Cria novo produto com dados do formulario.
   async function create(e) {
     e.preventDefault();
     setError("");
@@ -46,6 +49,7 @@ export default function AdminProducts() {
     }
   }
 
+  // Atualiza campo isolado de um produto.
   async function patch(id, field, value) {
     setError("");
     try {
@@ -56,6 +60,7 @@ export default function AdminProducts() {
     }
   }
 
+  // Remove produto pelo id.
   async function remove(id) {
     setError("");
     try {

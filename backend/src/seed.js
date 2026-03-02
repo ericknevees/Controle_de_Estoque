@@ -1,41 +1,72 @@
+// Script de seed para criar usuarios iniciais de forma segura.
 require("dotenv").config();
 const bcrypt = require("bcryptjs");
 const { connectDB } = require("./db");
 const User = require("./models/User");
 
+// Exige no minimo 6 caracteres no seed.
+const PASSWORD_REGEX = /^.{6,128}$/;
+
+// Garante que variaveis obrigatorias foram definidas.
+function requireEnv(name) {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Variavel obrigatoria ausente: ${name}`);
+  }
+  return value;
+}
+
+// Valida a forca da senha antes de gravar no banco.
+function validateSeedPassword(password, envName) {
+  if (!PASSWORD_REGEX.test(password)) {
+    throw new Error(`${envName} fraca. Use 6+ caracteres.`);
+  }
+}
+
+// Cria usuario somente se ele ainda nao existir.
+async function ensureUser({ username, email, password, role }) {
+  const existing = await User.findOne({ username });
+  if (existing) {
+    console.log(`Usuario ${username} ja existe`);
+    return;
+  }
+
+  await User.create({
+    username,
+    email,
+    passwordHash: await bcrypt.hash(password, 10),
+    role
+  });
+  console.log(`Usuario ${username} criado (${role})`);
+}
+
+// Fluxo principal do seed.
 async function run() {
   await connectDB(process.env.MONGO_URI);
 
-  const adminUser = await User.findOne({ username: "admin" });
-  if (!adminUser) {
-    await User.create({
-      username: "admin",
-      email: "admin@asbras.com",
-      passwordHash: await bcrypt.hash("Adm1n@123", 10),
-      role: "admin"
-    });
-    console.log("✅ Criado admin: admin / Adm1n@123");
-  } else {
-    console.log("ℹ️ Admin já existe");
-  }
+  const adminPassword = requireEnv("SEED_ADMIN_PASSWORD");
+  const userPassword = requireEnv("SEED_USER_PASSWORD");
+  validateSeedPassword(adminPassword, "SEED_ADMIN_PASSWORD");
+  validateSeedPassword(userPassword, "SEED_USER_PASSWORD");
 
-  const normalUser = await User.findOne({ username: "user" });
-  if (!normalUser) {
-    await User.create({
-      username: "user",
-      email: "user@asbras.com",
-      passwordHash: await bcrypt.hash("user123", 10),
-      role: "user"
-    });
-    console.log("✅ Criado user: user / user123");
-  } else {
-    console.log("ℹ️ User já existe");
-  }
+  await ensureUser({
+    username: process.env.SEED_ADMIN_USERNAME || "admin",
+    email: process.env.SEED_ADMIN_EMAIL || "admin@asbras.com",
+    password: adminPassword,
+    role: "admin"
+  });
+
+  await ensureUser({
+    username: process.env.SEED_USER_USERNAME || "user",
+    email: process.env.SEED_USER_EMAIL || "user@asbras.com",
+    password: userPassword,
+    role: "user"
+  });
 
   process.exit(0);
 }
 
 run().catch((e) => {
-  console.error(e);
+  console.error(e.message);
   process.exit(1);
 });

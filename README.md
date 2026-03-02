@@ -1,26 +1,23 @@
-# • Controle de Estoque (Layout Profissional)
+# Controle de Estoque
 
-Inclui:
-- Login (Admin vs Usuário) com JWT
-- Produtos com setor: **Expediente / Escritorio / Limpeza / Copa** 
-- Alerta automático quando **Qtd ≤ Mínimo**
-- Entradas (Admin) e Saídas (Usuário)
-- Relatórios (Admin): PDF
-- **Layout profissional** + **logo na página**
+Sistema com autenticao, controle de produtos, entradas, saidas e relatorios CSV/PDF.
 
-**Vídeo mostrando funcionamento na pasta mockups**
+## Requisitos
+- Node.js 18+
+- MongoDB Atlas ou local
 
-## Rodar local (VSCode)
+## Configuracao local
 
 ### Backend
-1) `backend/.env`:
-```env
-PORT=4000
-MONGO_URI=<SUA_STRING_DO_ATLAS_AQUI>
-JWT_SECRET=<SUA_CHAVE_AQUI>
-```
+1. Copie `backend/.env.example` para `backend/.env`
+2. Preencha os valores, principalmente:
+   - `MONGO_URI`
+   - `JWT_SECRET` (segredo forte e unico)
+   - `CORS_ORIGIN` (ex.: `http://localhost:5173`)
+   - `FRONTEND_URL` (ex.: `http://localhost:5173`)
+   - `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`
+3. Rode:
 
-2) Terminal:
 ```bash
 cd backend
 npm install
@@ -29,29 +26,29 @@ npm run dev
 ```
 
 ### Frontend
-1) `frontend/.env`:
-```env
-VITE_API_URL=http://localhost:4000
-```
+1. Copie `frontend/.env.example` para `frontend/.env`
+2. Ajuste `VITE_API_URL`
+3. Rode:
 
-2) Terminal:
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-## Deploy online (Render + Netlify)
+## Melhorias de seguranca aplicadas
+- Cadastro nao aceita mais `role` do cliente (sempre cria `user`).
+- JWT armazenado em cookie `HttpOnly` com `SameSite=Lax`.
+- CORS restrito por lista de origens via `CORS_ORIGIN`.
+- `helmet` habilitado para headers de seguranca.
+- Rate limit no endpoint de login.
+- Recuperacao de senha por email com token de uso unico e expiracao.
+- Validacao e sanitizacao de payloads no backend.
+- Bloqueio de chaves perigosas (`$` e `.`) para reduzir risco de NoSQL injection.
+- Politica minima de senha com 6 caracteres.
+- Credenciais fixas removidas do seed.
+- Logs de auditoria para login, cadastro, logout, CRUD de produtos, movimentacoes e relatorios.
 
-### Backend (Render)
-- Crie um Web Service apontando para o repo
-- Build: `npm install`
-- Start: `npm start`
-- Env Vars: `MONGO_URI`, `JWT_SECRET`
-
-### Frontend (Netlify)
-- Base directory: `frontend`
-- Build command: `npm run build`
-- Publish directory: `frontend/dist`
-- Environment variable:
-  - `VITE_API_URL = https://<sua-api-no-render>`
+## Deploy
+- Configure variaveis de ambiente do backend com os mesmos nomes do `.env.example`.
+- Em producao, use `NODE_ENV=production` para cookie `Secure`.

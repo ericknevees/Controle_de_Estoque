@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
 
+// Retorna data local em formato compativel com input date.
 function getTodayLocalInputValue() {
   const now = new Date();
   const tzOffsetMs = now.getTimezoneOffset() * 60000;
   return new Date(now.getTime() - tzOffsetMs).toISOString().slice(0, 10);
 }
 
+// Formata datas de saida para exibicao pt-BR.
 function formatDateBR(date) {
   return new Date(date).toLocaleDateString("pt-BR", { timeZone: "UTC" });
 }
 
+// Tela administrativa para lancar entradas de estoque.
 export default function AdminEntries() {
   const [products, setProducts] = useState([]);
   const [entries, setEntries] = useState([]);
@@ -22,6 +25,7 @@ export default function AdminEntries() {
     date: getTodayLocalInputValue()
   });
 
+  // Carrega produtos e historico de entradas em paralelo.
   async function load() {
     setError("");
     try {
@@ -36,6 +40,7 @@ export default function AdminEntries() {
 
   useEffect(() => { load(); }, []);
 
+  // Salva nova entrada e recarrega dados.
   async function create(e) {
     e.preventDefault();
     setError("");

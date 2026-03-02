@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { downloadFile } from "../api";
 
+// Formata datas para exibicao no filtro de periodo.
 function formatDateBR(date) {
   return new Date(date).toLocaleDateString("pt-BR", { timeZone: "UTC" });
 }
 
+// Tela administrativa para exportacao de relatorios.
 export default function AdminReports() {
   const [error, setError] = useState("");
   const [dates, setDates] = useState({
@@ -12,6 +14,7 @@ export default function AdminReports() {
     endDate: ""
   });
 
+  // Monta URL com filtro de data (quando informado) e dispara download.
   async function dl(path, filename) {
     setError("");
     try {

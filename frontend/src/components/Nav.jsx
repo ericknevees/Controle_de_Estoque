@@ -1,18 +1,27 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { auth } from "../auth";
+import { api } from "../api";
 import logo from "../assets/logo.png";
 
+// Cabecalho global com navegacao por perfil.
 export default function Nav() {
   const navigate = useNavigate();
   const logged = auth.isLogged();
   const role = auth.getRole();
   const user = auth.getUsername();
 
-  function logout() {
+  // Faz logout no backend e limpa sessao local.
+  async function logout() {
+    try {
+      await api.logout();
+    } catch (_) {
+      // Session can already be expired; local cleanup still applies.
+    }
     auth.logout();
     navigate("/login");
   }
 
+  // Classe padrao para links ativos/inativos.
   const cls = ({ isActive }) => "navlink" + (isActive ? " active" : "");
 
   return (
@@ -42,6 +51,7 @@ export default function Nav() {
               <div className="rightbox">
                 <span className="badge">{role.toUpperCase()}</span>
                 <span><b>{user}</b></span>
+                <Link to="/trocar-senha" className="navlink">Trocar senha</Link>
                 <button className="secondary" onClick={logout}>Sair</button>
               </div>
             )}

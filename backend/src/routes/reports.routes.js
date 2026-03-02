@@ -6,15 +6,19 @@ const Product = require("../models/Product");
 const Entry = require("../models/Entry");
 const Exit = require("../models/Exit");
 const { requireAuth, requireAdmin } = require("../middleware/auth");
+const { auditLog } = require("../utils/audit");
+const { sanitizeText } = require("../utils/validation");
 
 const router = express.Router();
 
+// Valida data textual no formato YYYY-MM-DD.
 function parseDateOnly(dateStr) {
   if (typeof dateStr !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return null;
   const [year, month, day] = dateStr.split("-").map(Number);
   return { year, month, day };
 }
 
+// Converte intervalo de datas para filtro UTC inclusivo.
 function getUtcRangeFromDateStrings(startDate, endDate) {
   const start = parseDateOnly(startDate);
   const end = parseDateOnly(endDate);
@@ -26,6 +30,7 @@ function getUtcRangeFromDateStrings(startDate, endDate) {
   };
 }
 
+// Monta filtro opcional por data a partir da querystring.
 function getDateFilterFromQuery(req, res) {
   const { startDate, endDate } = req.query;
   if (!startDate || !endDate) return {};
@@ -39,6 +44,7 @@ function getDateFilterFromQuery(req, res) {
   return { date: dateRange };
 }
 
+// Formata data para exibicao pt-BR sem deslocamento de fuso.
 function formatDateBR(date) {
   return new Date(date).toLocaleDateString("pt-BR", { timeZone: "UTC" });
 }
@@ -48,7 +54,7 @@ function formatDateBR(date) {
  * (Opcional) ?sector=Limpeza
  */
 router.get("/stock.csv", requireAuth, requireAdmin, async (req, res) => {
-  const { sector } = req.query;
+  const sector = sanitizeText(req.query?.sector || "", 20);
   const filter = sector ? { sector } : {};
 
   const products = await Product.find(filter).sort({ sector: 1, name: 1 }).lean();
@@ -66,11 +72,13 @@ router.get("/stock.csv", requireAuth, requireAdmin, async (req, res) => {
 
   res.setHeader("Content-Type", "text/csv; charset=utf-8");
   res.setHeader("Content-Disposition", 'attachment; filename="estoque.csv"');
+  auditLog(req, "report.stock.csv", { sector: sector || "all" });
   res.send(csv);
 });
 
+// Gera PDF de estoque atual.
 router.get("/stock.pdf", requireAuth, requireAdmin, async (req, res) => {
-  const { sector } = req.query;
+  const sector = sanitizeText(req.query?.sector || "", 20);
   const filter = sector ? { sector } : {};
 
   const products = await Product.find(filter).sort({ sector: 1, name: 1 }).lean();
@@ -80,6 +88,7 @@ router.get("/stock.pdf", requireAuth, requireAdmin, async (req, res) => {
 
   const doc = new PDFDocument({ margin: 40 });
   doc.pipe(res);
+  auditLog(req, "report.stock.pdf", { sector: sector || "all" });
 
   doc.fontSize(16).text("Relatorio de Estoque", { align: "center" });
   doc.moveDown();
@@ -101,6 +110,7 @@ router.get("/stock.pdf", requireAuth, requireAdmin, async (req, res) => {
   doc.end();
 });
 
+// Gera PDF de entradas com filtro opcional por periodo.
 router.get("/entries.pdf", requireAuth, requireAdmin, async (req, res) => {
   const filter = getDateFilterFromQuery(req, res);
   if (filter === null) return;
@@ -113,6 +123,7 @@ router.get("/entries.pdf", requireAuth, requireAdmin, async (req, res) => {
 
   const doc = new PDFDocument({ margin: 40 });
   doc.pipe(res);
+  auditLog(req, "report.entries.pdf", { startDate: startDate || null, endDate: endDate || null });
 
   doc.fontSize(16).text("Relatorio de Entradas", { align: "center" });
   if (startDate && endDate) {
@@ -149,6 +160,7 @@ router.get("/entries.pdf", requireAuth, requireAdmin, async (req, res) => {
   doc.end();
 });
 
+// Gera PDF de saidas com filtro opcional por periodo.
 router.get("/exits.pdf", requireAuth, requireAdmin, async (req, res) => {
   const filter = getDateFilterFromQuery(req, res);
   if (filter === null) return;
@@ -161,6 +173,7 @@ router.get("/exits.pdf", requireAuth, requireAdmin, async (req, res) => {
 
   const doc = new PDFDocument({ margin: 40 });
   doc.pipe(res);
+  auditLog(req, "report.exits.pdf", { startDate: startDate || null, endDate: endDate || null });
 
   doc.fontSize(16).text("Relatorio de Saidas", { align: "center" });
   if (startDate && endDate) {
@@ -203,6 +216,7 @@ router.get("/exits.pdf", requireAuth, requireAdmin, async (req, res) => {
   doc.end();
 });
 
+// Gera CSV de entradas.
 router.get("/entries.csv", requireAuth, requireAdmin, async (req, res) => {
   const filter = getDateFilterFromQuery(req, res);
   if (filter === null) return;
@@ -221,9 +235,14 @@ router.get("/entries.csv", requireAuth, requireAdmin, async (req, res) => {
 
   res.setHeader("Content-Type", "text/csv; charset=utf-8");
   res.setHeader("Content-Disposition", 'attachment; filename="entradas.csv"');
+  auditLog(req, "report.entries.csv", {
+    startDate: req.query?.startDate || null,
+    endDate: req.query?.endDate || null
+  });
   res.send(csv);
 });
 
+// Gera CSV de saidas.
 router.get("/exits.csv", requireAuth, requireAdmin, async (req, res) => {
   const filter = getDateFilterFromQuery(req, res);
   if (filter === null) return;
@@ -244,6 +263,10 @@ router.get("/exits.csv", requireAuth, requireAdmin, async (req, res) => {
 
   res.setHeader("Content-Type", "text/csv; charset=utf-8");
   res.setHeader("Content-Disposition", 'attachment; filename="saidas.csv"');
+  auditLog(req, "report.exits.csv", {
+    startDate: req.query?.startDate || null,
+    endDate: req.query?.endDate || null
+  });
   res.send(csv);
 });
 

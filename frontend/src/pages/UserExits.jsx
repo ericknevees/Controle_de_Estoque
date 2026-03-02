@@ -4,16 +4,19 @@ import { auth } from "../auth";
 
 const SECTORS = ["Expediente", "Escritorio", "Limpeza", "Copa"];
 
+// Retorna data local em formato compativel com input date.
 function getTodayLocalInputValue() {
   const now = new Date();
   const tzOffsetMs = now.getTimezoneOffset() * 60000;
   return new Date(now.getTime() - tzOffsetMs).toISOString().slice(0, 10);
 }
 
+// Formata datas para exibicao no historico.
 function formatDateBR(date) {
   return new Date(date).toLocaleDateString("pt-BR", { timeZone: "UTC" });
 }
 
+// Tela de registro de saidas para usuario autenticado.
 export default function UserExits() {
   const [sector, setSector] = useState("Expediente");
   const [products, setProducts] = useState([]);
@@ -33,6 +36,7 @@ export default function UserExits() {
     [products, form.productId]
   );
 
+  // Carrega produtos do setor selecionado e historico de saidas.
   async function load(selectedSector = sector) {
     setError("");
     try {
@@ -50,6 +54,7 @@ export default function UserExits() {
 
   useEffect(() => { load(sector); }, [sector]);
 
+  // Cria saida com dados do formulario e atualiza tela.
   async function create(e) {
     e.preventDefault();
     setError("");

@@ -4,12 +4,14 @@ import { auth } from "../auth";
 import { useNavigate, Link } from "react-router-dom";
 import logo from "../assets/logo.png";
 
+// Tela de autenticacao inicial.
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  // Envia credenciais para API e redireciona conforme perfil.
   async function onSubmit(e) {
     e.preventDefault();
     setError("");
@@ -31,18 +33,18 @@ export default function Login() {
             <img src={logo} alt="ASBRAS" style={{ width: 100, height: 100, borderRadius: 14 }} />
             <div>
               <h1 style={{ margin: 0 }}>Controle de Estoque</h1>
-              <div className="small">• Controle de entradas, saídas, mínimo em estoque e relatório para acompanhamento</div>
+              <div className="small">Controle de entradas, saidas, minimo em estoque e relatorio para acompanhamento</div>
             </div>
           </div>
 
           <p style={{ marginTop: 12 }}>
-            Organize todo os materiais por categoria e receba alerta quando atingir o mínimo.
+            Organize os materiais por categoria e receba alerta quando atingir o minimo.
           </p>
 
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 12 }}>
-            <span className="badge ok">✓ Alerta de reposição</span>
-            <span className="badge">📦 Categorias</span>
-            <span className="badge">🧾 Relatórios PDF</span>
+            <span className="badge ok">Alerta de reposicao</span>
+            <span className="badge">Categorias</span>
+            <span className="badge">Relatorios PDF</span>
           </div>
         </div>
 
@@ -51,7 +53,7 @@ export default function Login() {
           {error && <p style={{ color: "var(--danger)", marginTop: 0 }}>{error}</p>}
 
           <form onSubmit={onSubmit} style={{ display: "grid", gap: 10 }}>
-            <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Usuário" />
+            <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Usuario" />
             <input value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Senha" type="password" />
 
             <button>Entrar</button>
@@ -59,7 +61,16 @@ export default function Login() {
 
           <div style={{ marginTop: 14, textAlign: "center" }}>
             <div className="small" style={{ marginBottom: 8 }}>
-              Não tem conta? <Link to="/register" style={{ color: "var(--accent)", textDecoration: "none", fontWeight: 700 }}>Cadastre-se</Link>
+              Nao tem conta?{" "}
+              <Link to="/register" style={{ color: "var(--accent)", textDecoration: "none", fontWeight: 700 }}>
+                Cadastre-se
+              </Link>
+            </div>
+            <div className="small">
+              Esqueceu a senha?{" "}
+              <Link to="/forgot-password" style={{ color: "var(--accent)", textDecoration: "none", fontWeight: 700 }}>
+                Recuperar acesso
+              </Link>
             </div>
           </div>
         </div>
