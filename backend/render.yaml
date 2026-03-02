@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: asbras-estoque-api
+    name: estoque-api
     env: node
     plan: free
     rootDir: backend

@@ -8,6 +8,7 @@ Inclui:
 - Relatórios (Admin): PDF
 - **Layout profissional** + **logo na página**
 
+
 ## Rodar local (VSCode)
 
 ### Backend

@@ -67,6 +67,8 @@ export default function AdminProducts() {
   }
 
   const restockItems = items.filter((p) => p.needsRestock);
+  const shouldLoopRestock = restockItems.length > 1;
+  const restockTrackItems = shouldLoopRestock ? [...restockItems, ...restockItems] : restockItems;
 
   return (
     <div className="container" style={{ padding: "16px 0" }}>
@@ -183,14 +185,14 @@ export default function AdminProducts() {
           <div style={{ overflow: "hidden", width: "100%" }}>
             {/* trilho animado */}
             <div
-              className="restock-carousel"
+              className={shouldLoopRestock ? "restock-carousel" : ""}
               style={{
                 display: "flex",
                 gap: 12,
                 width: "max-content"
               }}
             >
-              {[...restockItems, ...restockItems].map((p, idx) => (
+              {restockTrackItems.map((p, idx) => (
                 <div
                   key={`${p._id}-${idx}`}
                   style={{
