@@ -8,7 +8,12 @@ async function run() {
 
   const adminUser = await User.findOne({ username: "admin" });
   if (!adminUser) {
-  
+    await User.create({
+      username: "admin",
+      email: "admin@asbras.com",
+      passwordHash: await bcrypt.hash("Adm1n@123", 10),
+      role: "admin"
+    });
     console.log("✅ Criado admin: admin / Adm1n@123");
   } else {
     console.log("ℹ️ Admin já existe");

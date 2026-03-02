@@ -2,7 +2,7 @@ import { useState } from "react";
 import { api } from "../api";
 import { auth } from "../auth";
 import { useNavigate, Link } from "react-router-dom";
-import logo from "../assets/logo.avif";
+import logo from "../assets/logo.png";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -28,7 +28,7 @@ export default function Login() {
       <div className="login-card card">
         <div className="hero">
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <img src={logo} alt="ASBRAS" style={{ width: 90, height: 90, borderRadius: 14 }} />
+            <img src={logo} alt="ASBRAS" style={{ width: 100, height: 100, borderRadius: 14 }} />
             <div>
               <h1 style={{ margin: 0 }}>Controle de Estoque</h1>
               <div className="small">• Controle de entradas, saídas, mínimo em estoque e relatório para acompanhamento</div>
@@ -61,14 +61,6 @@ export default function Login() {
             <div className="small" style={{ marginBottom: 8 }}>
               Não tem conta? <Link to="/register" style={{ color: "var(--accent)", textDecoration: "none", fontWeight: 700 }}>Cadastre-se</Link>
             </div>
-            <button 
-              type="button" 
-              className="secondary" 
-              onClick={() => { setUsername("admin"); setPassword("admin123"); }}
-              style={{ fontSize: "12px", padding: "6px 10px", width: "fit-content", margin: "0 auto" }}
-            >
-              📌 Logar como admin
-            </button>
           </div>
         </div>
       </div>

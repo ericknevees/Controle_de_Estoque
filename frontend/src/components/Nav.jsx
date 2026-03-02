@@ -1,6 +1,6 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { auth } from "../auth";
-import logo from "../assets/logo.avif";
+import logo from "../assets/logo.png";
 
 export default function Nav() {
   const navigate = useNavigate();
@@ -22,8 +22,8 @@ export default function Nav() {
           <div className="nav-left">
             <img src={logo} alt="ASBRAS" className="brand-logo" style={{ width: 45, height: 45 }} />
             <div className="brand-text">
-              <div className="title">ASBRAS</div>
-              <div className="subtitle">Associação Brasileira de Atenção à Assistência em Saúde</div>
+              <div className="title">ContEst</div>
+              <div className="subtitle">Controle de Estoque</div>
             </div>
           </div>
 
