@@ -1,15 +1,18 @@
+import { auth } from "./auth";
+
 const BASE = import.meta.env.VITE_API_URL;
 
-// Wrapper padrao de fetch para JSON + cookie de sessao.
+// Wrapper padrao de fetch para JSON + Bearer token.
 async function request(path, options = {}) {
+  const token = auth.getToken();
   const headers = {
     ...(options.body ? { "Content-Type": "application/json" } : {}),
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...(options.headers || {})
   };
 
   const res = await fetch(`${BASE}${path}`, {
     ...options,
-    credentials: "include",
     headers
   });
 
@@ -42,10 +45,11 @@ export const api = {
   createExit: (body) => request("/api/exits", { method: "POST", body: JSON.stringify(body) })
 };
 
-// Download de arquivos binarios (PDF/CSV) mantendo cookie de sessao.
+// Download de arquivos binarios (PDF/CSV) com token de sessao.
 export async function downloadFile(path, filename) {
+  const token = auth.getToken();
   const res = await fetch(`${BASE}${path}`, {
-    credentials: "include"
+    headers: token ? { Authorization: `Bearer ${token}` } : {}
   });
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));

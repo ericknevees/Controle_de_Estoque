@@ -48,7 +48,7 @@ router.post("/login", async (req, res) => {
   const token = signUserToken(user);
   res.cookie("access_token", token, authCookieOptions());
   auditLog(req, "auth.login.success", { username: user.username, role: user.role });
-  res.json({ role: user.role, username: user.username });
+  res.json({ token, role: user.role, username: user.username });
 });
 
 // Cadastro de usuario comum (role sempre "user").
@@ -86,6 +86,7 @@ router.post("/register", async (req, res) => {
     auditLog(req, "auth.register.success", { username: user.username });
 
     res.status(201).json({
+      token,
       role: user.role,
       username: user.username,
       message: "Cadastro realizado com sucesso"
