@@ -32,7 +32,7 @@ export default function Register() {
     }
 
     if (form.password.length < 6) {
-      setError("A senha deve ter no minimo 6 caracteres");
+      setError("A senha deve ter no mínimo 6 caracteres");
       return;
     }
 
@@ -71,7 +71,7 @@ export default function Register() {
           <form onSubmit={onSubmit} style={{ display: "grid", gap: 10 }}>
             <input
               type="text"
-              placeholder="Usuario"
+              placeholder="Usuário"
               value={form.username}
               onChange={(e) => setForm({ ...form, username: e.target.value })}
             />
@@ -100,7 +100,7 @@ export default function Register() {
           <div style={{ marginTop: 14, textAlign: "center" }} className="small">
             Ja tem conta?{" "}
             <Link to="/login" style={{ color: "var(--accent)", textDecoration: "none", fontWeight: 700 }}>
-              Faca login
+              Faça login
             </Link>
           </div>
         </div>

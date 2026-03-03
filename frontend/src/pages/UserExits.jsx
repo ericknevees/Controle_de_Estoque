@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { api } from "../api";
 import { auth } from "../auth";
 
-const SECTORS = ["Expediente", "Escritorio", "Limpeza", "Copa"];
+const SECTORS = ["Expediente", "Escritório", "Limpeza", "Copa"];
 
 // Retorna data local em formato compativel com input date.
 function getTodayLocalInputValue() {
@@ -16,7 +16,7 @@ function formatDateBR(date) {
   return new Date(date).toLocaleDateString("pt-BR", { timeZone: "UTC" });
 }
 
-// Tela de registro de saidas para usuario autenticado.
+// Tela de registro de saídas para usuario autenticado.
 export default function UserExits() {
   const [sector, setSector] = useState("Expediente");
   const [products, setProducts] = useState([]);
@@ -36,7 +36,7 @@ export default function UserExits() {
     [products, form.productId]
   );
 
-  // Carrega produtos do setor selecionado e historico de saidas.
+  // Carrega produtos do setor selecionado e historico de saídas.
   async function load(selectedSector = sector) {
     setError("");
     try {
@@ -54,7 +54,7 @@ export default function UserExits() {
 
   useEffect(() => { load(sector); }, [sector]);
 
-  // Cria saida com dados do formulario e atualiza tela.
+  // Cria saída com dados do formulario e atualiza tela.
   async function create(e) {
     e.preventDefault();
     setError("");
@@ -91,7 +91,7 @@ export default function UserExits() {
               <div className="small">Selecionado</div>
               <div style={{ fontWeight: 800 }}>{selectedProduct.name} - {selectedProduct.qty} {selectedProduct.unit} em estoque</div>
               <div className="small">
-                Minimo: {selectedProduct.minQty}{" "}
+                Mínimo: {selectedProduct.minQty}{" "}
                 {selectedProduct.needsRestock ? <span className="badge danger">REPOR</span> : <span className="badge ok">OK</span>}
               </div>
             </div>
@@ -101,7 +101,7 @@ export default function UserExits() {
 
       <div className="grid two">
         <div className="card" style={{ padding: 16 }}>
-          <h3 style={{ marginTop: 0 }}>Registrar saida</h3>
+          <h3 style={{ marginTop: 0 }}>Registrar saída</h3>
           <form onSubmit={create} style={{ display: "grid", gap: 10 }}>
             <select value={form.productId} onChange={(e) => setForm({ ...form, productId: e.target.value })} disabled={products.length === 0}>
               {products.map((p) => <option key={p._id} value={p._id}>{p.name} (disp: {p.qty})</option>)}
@@ -127,15 +127,15 @@ export default function UserExits() {
               </div>
             </div>
 
-            <button disabled={products.length === 0 || !form.productId}>Confirmar saida</button>
-            <div className="small">Ao registrar, o estoque e atualizado automaticamente.</div>
+            <button disabled={products.length === 0 || !form.productId}>Confirmar saída</button>
+            <div className="small">Ao registrar, o estoque é atualizado automaticamente.</div>
           </form>
         </div>
 
         <div className="card" style={{ padding: 16 }}>
           <h3 style={{ marginTop: 0 }}>Estoque atual - {sector}</h3>
           {products.length === 0 ? (
-            <p className="small">Nenhum produto cadastrado neste setor.</p>
+            <p className="small">Nenhum produto cadastrado nesta categoria.</p>
           ) : (
             <table className="table">
               <thead>
@@ -158,10 +158,10 @@ export default function UserExits() {
       </div>
 
       <div className="card" style={{ padding: 16, marginTop: 14 }}>
-        <h3 style={{ marginTop: 0 }}>Historico de saidas</h3>
+        <h3 style={{ marginTop: 0 }}>Histórico de saídas</h3>
         <table className="table">
           <thead>
-            <tr><th>Data</th><th>Produto</th><th>Unidade</th><th>Setor</th><th>Qtd</th><th>Retirou</th><th>Observacao</th></tr>
+            <tr><th>Data</th><th>Produto</th><th>Unidade</th><th>Setor</th><th>Qtd</th><th>Retirou</th><th>Observação</th></tr>
           </thead>
           <tbody>
             {exits.map((ex) => (

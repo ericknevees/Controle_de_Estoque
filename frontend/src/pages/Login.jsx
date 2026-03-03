@@ -19,7 +19,7 @@ export default function Login() {
       const data = await api.login({ username, password });
       auth.saveSession(data);
       if (data.role === "admin") navigate("/admin/produtos");
-      else navigate("/usuario/saidas");
+      else navigate("/usuário/saidas");
     } catch (err) {
       setError(err.message);
     }
@@ -38,13 +38,13 @@ export default function Login() {
           </div>
 
           <p style={{ marginTop: 12 }}>
-            Organize os materiais por categoria e receba alerta quando atingir o minimo.
+            Organize os materiais por categoria e receba alerta quando atingir o mínimo.
           </p>
 
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 12 }}>
-            <span className="badge ok">Alerta de reposicao</span>
+            <span className="badge ok">Alerta de reposição</span>
             <span className="badge">Categorias</span>
-            <span className="badge">Relatorios PDF</span>
+            <span className="badge">Relatórios PDF</span>
           </div>
         </div>
 
@@ -53,7 +53,7 @@ export default function Login() {
           {error && <p style={{ color: "var(--danger)", marginTop: 0 }}>{error}</p>}
 
           <form onSubmit={onSubmit} style={{ display: "grid", gap: 10 }}>
-            <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Usuario" />
+            <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Usuário" />
             <input value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Senha" type="password" />
 
             <button>Entrar</button>
@@ -61,7 +61,7 @@ export default function Login() {
 
           <div style={{ marginTop: 14, textAlign: "center" }}>
             <div className="small" style={{ marginBottom: 8 }}>
-              Nao tem conta?{" "}
+              Não tem conta?{" "}
               <Link to="/register" style={{ color: "var(--accent)", textDecoration: "none", fontWeight: 700 }}>
                 Cadastre-se
               </Link>

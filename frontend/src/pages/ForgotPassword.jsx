@@ -30,7 +30,7 @@ export default function ForgotPassword() {
             <img src={logo} alt="ASBRAS" style={{ width: 90, height: 90, borderRadius: 14 }} />
             <div>
               <h1 style={{ margin: 0 }}>Esqueci Minha Senha</h1>
-              <div className="small">Informe o email cadastrado para receber o link de redefinicao.</div>
+              <div className="small">Informe o email cadastrado para receber o link de redefinição.</div>
             </div>
           </div>
         </div>

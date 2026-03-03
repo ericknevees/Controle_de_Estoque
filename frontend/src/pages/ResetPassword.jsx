@@ -24,11 +24,11 @@ export default function ResetPassword() {
       return;
     }
     if (password.length < 6) {
-      setError("A senha deve ter no minimo 6 caracteres.");
+      setError("A senha deve ter no mínimo 6 caracteres.");
       return;
     }
     if (password !== confirmPassword) {
-      setError("As senhas nao conferem.");
+      setError("As senhas não conferem.");
       return;
     }
 

@@ -23,11 +23,11 @@ export default function ChangePassword() {
       return;
     }
     if (newPassword.length < 6) {
-      setError("A nova senha deve ter no minimo 6 caracteres.");
+      setError("A nova senha deve ter no mínimo 6 caracteres.");
       return;
     }
     if (newPassword !== confirmPassword) {
-      setError("As senhas nao conferem.");
+      setError("As senhas não conferem.");
       return;
     }
 
@@ -50,7 +50,7 @@ export default function ChangePassword() {
             <img src={logo} alt="ASBRAS" style={{ width: 90, height: 90, borderRadius: 14 }} />
             <div>
               <h1 style={{ margin: 0 }}>Trocar Senha</h1>
-              <div className="small">Atualize sua senha com seguranca.</div>
+              <div className="small">Atualize sua senha com segurança.</div>
             </div>
           </div>
         </div>

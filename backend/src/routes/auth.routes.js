@@ -171,12 +171,14 @@ router.post("/forgot-password", async (req, res) => {
   const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
   const resetLink = `${frontendUrl}/reset-password?token=${encodeURIComponent(rawToken)}`;
 
-  try {
-    await sendPasswordResetEmail(user.email, resetLink);
-    auditLog(req, "auth.forgot_password.sent", { userId: user._id.toString() });
-  } catch (err) {
-    auditLog(req, "auth.forgot_password.email_error", { userId: user._id.toString(), error: err.message });
-  }
+  sendPasswordResetEmail(user.email, resetLink)
+    .then(() => {
+      auditLog(req, "auth.forgot_password.sent", { userId: user._id.toString() });
+    })
+    .catch((err) => {
+      console.error("Falha envio email reset:", err.message);
+      auditLog(req, "auth.forgot_password.email_error", { userId: user._id.toString(), error: err.message });
+    });
 
   return res.json(genericOk);
 });

@@ -6,7 +6,7 @@ function formatDateBR(date) {
   return new Date(date).toLocaleDateString("pt-BR", { timeZone: "UTC" });
 }
 
-// Tela administrativa para exportacao de relatorios.
+// Tela administrativa para exportacao de relatórios.
 export default function AdminReports() {
   const [error, setError] = useState("");
   const [dates, setDates] = useState({
@@ -31,13 +31,13 @@ export default function AdminReports() {
 
   return (
     <div className="container" style={{ padding: "16px 0" }}>
-      <h2 className="page-title">• Relatorios</h2>
+      <h2 className="page-title">• Relatórios</h2>
       {error && <p style={{ color: "var(--danger)" }}>{error}</p>}
 
       <div className="grid two">
         <div className="card" style={{ padding: 16 }}>
           <h3 style={{ marginTop: 0 }}>Downloads</h3>
-          <p className="small" style={{ marginTop: 0 }}>Exporte relatorios do estoque e do historico.</p>
+          <p className="small" style={{ marginTop: 0 }}>Exporte relatórios do estoque e do histórico.</p>
 
           <div style={{ display: "grid", gap: 10, marginBottom: 14 }}>
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
@@ -70,19 +70,15 @@ export default function AdminReports() {
           <div style={{ display: "grid", gap: 10, maxWidth: 420 }}>
             <button onClick={() => dl("/api/reports/stock.pdf", "estoque.pdf")}>Baixar Estoque (PDF)</button>
             <button onClick={() => dl("/api/reports/entries.pdf", "entradas.pdf")}>Baixar Entradas (PDF)</button>
-            <button onClick={() => dl("/api/reports/exits.pdf", "saidas.pdf")}>Baixar Saidas (PDF)</button>
+            <button onClick={() => dl("/api/reports/exits.pdf", "saidas.pdf")}>Baixar Saídas (PDF)</button>
           </div>
         </div>
 
         <div className="card" style={{ padding: 16 }}>
           <h3 style={{ marginTop: 0 }}>Por Categoria (opcional)</h3>
           <p className="small" style={{ marginTop: 0 }}>
-            Voce pode filtrar o estoque por categoria adicionando <code>?sector=Limpeza</code> no link:
+            Voce pode filtrar o estoque por categoria adicionando <code>Categoria=Limpeza</code> no link:
           </p>
-          <div className="small">
-            <div><code>/api/reports/stock.csv?sector=Limpeza</code></div>
-            <div><code>/api/reports/stock.pdf?sector=Escritorio</code></div>
-          </div>
         </div>
       </div>
     </div>
